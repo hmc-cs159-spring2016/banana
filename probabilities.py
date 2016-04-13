@@ -1,7 +1,7 @@
-from nltk import FreqDist, ConditionalProbDist, MLEProbDist, grammar, CFG, production
+from nltk import FreqDist, grammar
 from nltk.corpus import treebank
 
-def getProdProb(parsedTree, freqdist):
+def getProdFreq(parsedTree, freqdist):
 	"""
 	Input: nltk.tree.Tree object, FreqDist object
 	Output: nothing
