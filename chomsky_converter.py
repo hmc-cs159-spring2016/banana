@@ -17,7 +17,6 @@ def break_large_rhs(lhs, rhs):
 	# Break off the tail, making 
 	newnonterm = Nonterminal(lhs.symbol()+"_"+rhs[0].symbol())
 	newrule = Production(lhs, [rhs[0], newnonterm])
-	print("New intermediate rule", newrule)
 	return [newrule] + break_large_rhs(newnonterm, rhs[1:])
 
 def remove_empty_productions(cfg_grammar):
@@ -31,7 +30,6 @@ def remove_empty_productions(cfg_grammar):
 
 	# Deal with the 1st empty
 	empty = empties[0]
-	print("running empty for", empty)
 	nullable = empty.lhs()
 
 	new_rules = []
@@ -40,7 +38,6 @@ def remove_empty_productions(cfg_grammar):
 			# create a new rule for this production without the nullable thing
 			lhs = production.lhs()
 			rhs = [x for x in production.rhs() if x != nullable]
-			print("removing", nullable, "from", production, "yields rhs of", rhs)
 			new_rules += [Production(lhs, rhs)]
 		
 		# Maintain all original productions, except for the empty one we're removing
@@ -110,7 +107,6 @@ def convert_grammar(cfg_grammar):
 					newnonterm = Nonterminal(rhs[i])
 					term_rules += Production(newnonterm, rhs)
 					rhs[i] = newnonterm
-					print("terminal in nonsolitary,", production)
 			new_productions += term_rules
 			# Now break up large groups
 			new_productions += break_large_rhs(lhs, rhs)
