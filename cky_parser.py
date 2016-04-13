@@ -5,13 +5,13 @@ CKY Parser for constituent parsing
 from nltk.corpus import treebank
 from nltk import Nonterminal, nonterminals, Production, CFG, Tree, ProbabilisticTree
 from functools import reduce
+import nltk
 # Get the Penn Treebank corpus
 files = treebank.fileids()
 files = files[:5] # make shorter for setup
 
 parsed_sents = [sent for sentlist in [treebank.parsed_sents(file_id) for file_id in files] for sent in sentlist]
 print(parsed_sents[0])
-
 
 
 
@@ -22,7 +22,7 @@ class ckyparser:
         
 
     def parse(self,sent):
-        toks = sent.split(' ')
+        toks = nltk.word_tokenize(sent)
         #Get the first layer
 
         n = len(toks)
@@ -59,16 +59,30 @@ class ckyparser:
         return chart,bts
         
         
-
-
+import chomsky_converter 
+cfg_grammar = nltk.data.load("project1_grammar.cfg")
+cnf_grammar = chomsky_converter.convert_grammar(cfg_grammar)
 
 
 #Check it
 nts = nonterminals('S, NP, VP, PP, N, V, P, DT')
 
-s = '(S (NP (DT the) (NN cat)) (VP (VBD ate) (NP (DT a) (NN cookie))))'
-t = Tree.fromstring(s)
-t.chomsky_normal_form()
+#s = '(S (NP (DT the) (NN cat)) (VP (VBD ate) (NP (DT a) (NN cookie))))'
+#t = Tree.fromstring(s)
+#t.chomsky_normal_form()
 
-myparser = ckyparser(t.productions(),nts)
-chart,bts=myparser.parse("the cat ate a cookie")
+myparser = ckyparser(cnf_grammar.productions(),nts)
+
+with open('sentences.txt','r') as f:
+    allexamples = f.read().splitlines()
+for ex in allexamples:
+    chart,bts=myparser.parse(ex)
+    
+    if Nonterminal('TOP') in chart[-1][0]:
+        print("success")
+    else:
+        print("fail")
+        print(ex)
+        print(nltk.word_tokenize(ex))
+        print(chart)
+        print(bts)
