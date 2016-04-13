@@ -42,7 +42,7 @@ class ckyparser:
                 j = target
                 
                 #List of all relevant things to look at
-                up =  [(i-x,j) for x in range(1,depth+1)]
+                up =  [(i-x,j) for x in range(1,depth+1)][::-1]
                 right = [(i,j+x) for x in range(1,depth+1)]
                 
                 allNTs = []
@@ -71,4 +71,4 @@ t = Tree.fromstring(s)
 t.chomsky_normal_form()
 
 myparser = ckyparser(t.productions(),nts)
-myparser.parse("the cat ate a cookie")
+chart,bts=myparser.parse("the cat ate a cookie")
