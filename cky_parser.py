@@ -21,6 +21,7 @@ class ckyparser:
         self.nts = nts
         
 
+    #TODO - change to return a list of parse trees
     def parse(self,sent):
         toks = nltk.word_tokenize(sent)
         #Get the first layer
@@ -29,7 +30,7 @@ class ckyparser:
         
         initlayer = [[p.lhs() for p in self.rules if p.rhs()[0] == x] for x in toks]
         
-        #where 
+        #Fill in initial things along the diagonal
         chart = [[[] for x in range(i+1)] for i in range(n)]
         bts = [[[] for x in range(i+1)] for i in range(n)]
         for i,elem in enumerate(initlayer):
@@ -55,7 +56,7 @@ class ckyparser:
                     allNTs.append(set(thingstoadd))
                 chart[i][j] = list(reduce(set.union, allNTs))
                 bts[i][j] = allBTs
-                
+        
         return chart,bts
         
         
