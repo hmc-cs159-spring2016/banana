@@ -16,25 +16,26 @@ print(parsed_sents[0])
 
 
 class ckyparser:
-    def __init__(self,rules,nts):
+    def __init__(self,rules,success):
         self.rules = rules
-        self.nts = nts
+        self.success = success
         
-
-    #TODO - change to return a list of parse trees
+    #returns a list of parse trees
     def parse(self,sent):
         toks = nltk.word_tokenize(sent)
         #Get the first layer
 
         n = len(toks)
         
-        initlayer = [[p.lhs() for p in self.rules if p.rhs()[0] == x] for x in toks]
+        initlayer = [[p for p in self.rules if p.rhs()[0] == x] for x in toks]
         
         #Fill in initial things along the diagonal
-        chart = [[[] for x in range(i+1)] for i in range(n)]
-        bts = [[[] for x in range(i+1)] for i in range(n)]
-        for i,elem in enumerate(initlayer):
-            chart[i][i] = elem
+        chart = [[{} for x in range(i+1)] for i in range(n)]
+        trees = [[[] for x in range(i+1)] for i in range(n)]
+        for i,plist in enumerate(initlayer):
+            for p in plist:
+                chart[i][i][p] = None
+                trees[i][i].append(Tree(p.lhs(),[p.rhs()[0]]))
         
         for depth in range(1,n): #iterate along depth n
             height = n-depth
@@ -46,18 +47,24 @@ class ckyparser:
                 up =  [(i-x,j) for x in range(1,depth+1)][::-1]
                 right = [(i,j+x) for x in range(1,depth+1)]
                 
-                allNTs = []
-                allBTs = []
                 for (i1,j1),(i2,j2) in zip(up,right):
-                    
-                    thingstoadd = [p.lhs() for p in self.rules if (p.rhs()[0] in chart[i1][j1] and p.rhs()[1] in chart[i2][j2])]
-                    if len(thingstoadd) > 0:
-                        allBTs.append(((i1,j1),(i2,j2)))
-                    allNTs.append(set(thingstoadd))
-                chart[i][j] = list(reduce(set.union, allNTs))
-                bts[i][j] = allBTs
+                    for p in self.rules:
+                        if (p.rhs()[0] in [k.lhs() for k in chart[i1][j1]]) and (p.rhs()[1] in [k.lhs() for k in chart[i2][j2]]):
+                            lefttrees = [t for t in trees[i1][j1] if t.label() == p.rhs()[0]]
+                            righttrees = [t for t in trees[i2][j2] if t.label() == p.rhs()[1]]
+                            
+                            chart[i][j][p] = ((i1,j1),(i2,j2))
+                        
+                            for lt in lefttrees:
+                                for rt in righttrees:
+                                    newt = Tree(p.lhs(),[lt,rt])
+                                    if newt not in trees[i][j]:
+                                        trees[i][j].append(newt)
+                            
+        #trees that are good
+        mytrees = [t for t in trees[-1][0] if t.label() == self.success]
         
-        return chart,bts
+        return chart,mytrees
         
         
 import chomsky_converter 
@@ -72,18 +79,16 @@ nts = nonterminals('S, NP, VP, PP, N, V, P, DT')
 #t = Tree.fromstring(s)
 #t.chomsky_normal_form()
 
-myparser = ckyparser(cnf_grammar.productions(),nts)
+myparser = ckyparser(cnf_grammar.productions(),Nonterminal('TOP'))
 
 with open('sentences.txt','r') as f:
     allexamples = f.read().splitlines()
 for ex in allexamples:
-    chart,bts=myparser.parse(ex)
-    
-    if Nonterminal('TOP') in chart[-1][0]:
+    chart,mytrees=myparser.parse(ex)
+    if len(mytrees)>0:
         print("success")
     else:
         print("fail")
         print(ex)
         print(nltk.word_tokenize(ex))
-        print(chart)
-        print(bts)
+        print(mytrees)
