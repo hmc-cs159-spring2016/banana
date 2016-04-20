@@ -73,7 +73,6 @@ def eliminate_units(tree_parse):
         return tree_parse
 
     if len(tree_parse) == 1:
-        print("Single!", tree_parse.label)
         # We've got a singleton!
         if type(tree_parse[0]) == str:
             # We've got a terminal child, we're fine
@@ -84,7 +83,6 @@ def eliminate_units(tree_parse):
             child = tree_parse[0]
 
             grandchildren = [eliminate_units(t) for t in child]
-            print("new grandchildren:", grandchildren)
             return Tree(tree_parse.label(), grandchildren)
 
 
