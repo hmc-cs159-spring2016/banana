@@ -80,6 +80,13 @@ class maltparser:
 # b = a.parse('bye hello world hi')
 # print(b)
 
+g = DependencyGrammar.fromstring("""
+... 'taught' -> 'play' 'man'
+... 'man' -> 'the'
+... 'play' -> 'golf' 'dog' 'to'
+... 'dog' -> 'his'
+... """)
+
 grammar = DependencyGrammar([Production('taught',['play', 'man']),Production('man',['the']),Production('play',['golf','dog','to']),Production('dog',['his'])])
 
 a = maltparser(grammar)
