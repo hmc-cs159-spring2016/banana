@@ -17,7 +17,8 @@ Here is a quick list of files and what they do
    `myparser = cky_parser.ckyparser(grammar,start_symbol)`  
    `chart,mytrees = myparser.probabilistic_parse(sentence)`  
    `chart,mytrees = myparser.deterministic_parse(sentence)`  
-- main.py was an initial playground for figuring out the corpus,  
+- main.py was an initial playground for figuring out the corpus, it became where we 
+   run things from different files together.
 - malt_parser.py  
    `TODO`
 - probabilities.py takes in trees and returns a grammar, with an added shortcut 

@@ -26,7 +26,7 @@ toy_pcfg1 = PCFG.fromstring("""
     
 #toy_pcfg1 = treetransforms.chomsky_normal_form(toy_pcfg1)
 myparser = cky_parser.ckyparser(toy_pcfg1.productions(),Nonterminal('S'))
-chart,mytrees=myparser.probabilistic_parse("I saw John with my telescope")
+chart,mytrees=myparser.probabilistic_parse_from_sent("I saw John with my telescope")
 
 
 

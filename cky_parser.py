@@ -10,8 +10,8 @@ from collections import defaultdict
 import nltk
 
 class ckyparser:
-    def __init__(self,rules,success):
-        self.rules = rules
+    def __init__(self,grammar,success):
+        self.rules = grammar.productions()
         self.success = success
         
     #returns a list of parse trees
@@ -60,11 +60,12 @@ class ckyparser:
         
         return chart,mytrees
 
-    #returns the best parse
-    def probabilistic_parse(self,sent):
+    def probabilistic_parse_from_sent(self, sent):
         toks = nltk.word_tokenize(sent)
-        #Get the first layer
+        return self.probabilistic_parse(toks)
 
+    #returns the best parse
+    def probabilistic_parse(self,toks):
         n = len(toks)
         
         initlayer = [[p for p in self.rules if p.rhs()[0] == x] for x in toks]
