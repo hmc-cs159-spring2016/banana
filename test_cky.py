@@ -28,7 +28,7 @@ toy_pcfg1 = PCFG.fromstring("""
 #toy_pcfg1 = treetransforms.chomsky_normal_form(toy_pcfg1)
 files = treebank.fileids()
 files = files[:100] # make shorter for setup
-gram = makeGrammarFromTreebank(files)
+gram = makeGrammarFromTreebank(files,)
 myparser = cky_parser.ckyparser(gram,Nonterminal('S'))
 chart,mytrees=myparser.probabilistic_parse_from_sent("I saw John with my telescope")
 

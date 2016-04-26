@@ -13,7 +13,9 @@ def makeGrammarFromTreebank(fileIDs,cutoff=1):
     parsed_trees = [tree for treelist in [treebank.parsed_sents(file_id) 
                             for file_id in fileIDs] 
                             for tree in treelist]
-    return makeGrammar(parsed_trees,cutoff)
+    if cutoff == 0:
+        return makeGrammar(parsed_trees)
+    return makeGrammarWithUnknown(parsed_trees,cutoff)
     
     
 
