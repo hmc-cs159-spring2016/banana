@@ -14,14 +14,26 @@ class ckyparser:
         self.rules = grammar.productions()
         self.success = success
         
+    def getInit(self,x):
+        """
+        Tries to get a rule that matches x. if no such rule exists,
+        gets UNK.
+        """     
+        first_try = [p for p in self.rules if p.rhs()[0] == x]
+        if len(first_try)>0:
+            return first_try
+        return [p for p in self.rules if p.rhs()[0] == "UNK"]
+        
+        
+        
     #returns a list of parse trees
     def deterministic_parse(self,sent):
         toks = nltk.word_tokenize(sent)
         #Get the first layer
 
         n = len(toks)
-        
-        initlayer = [[p for p in self.rules if p.rhs()[0] == x] for x in toks]
+        initlayer = [self.getInit(x) for x in toks]
+
         
         #Fill in initial things along the diagonal
         chart = [[{} for x in range(i+1)] for i in range(n)]
@@ -67,8 +79,7 @@ class ckyparser:
     #returns the best parse
     def probabilistic_parse(self,toks):
         n = len(toks)
-        
-        initlayer = [[p for p in self.rules if p.rhs()[0] == x] for x in toks]
+        initlayer = [self.getInit(x) for x in toks]
         
         #Fill in initial things along the diagonal
         chart = [[{} for x in range(i+1)] for i in range(n)]

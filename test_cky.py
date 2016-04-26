@@ -25,7 +25,7 @@ toy_pcfg1 = PCFG.fromstring("""
     """)
     
 #toy_pcfg1 = treetransforms.chomsky_normal_form(toy_pcfg1)
-myparser = cky_parser.ckyparser(toy_pcfg1.productions(),Nonterminal('S'))
+myparser = cky_parser.ckyparser(toy_pcfg1,Nonterminal('S'))
 chart,mytrees=myparser.probabilistic_parse_from_sent("I saw John with my telescope")
 
 
@@ -48,7 +48,7 @@ nts = nonterminals('S, NP, VP, PP, N, V, P, DT')
 #t = Tree.fromstring(s)
 #t.chomsky_normal_form()
 
-myparser = cky_parser.ckyparser(cnf_grammar.productions(),Nonterminal('TOP'))
+myparser = cky_parser.ckyparser(cnf_grammar,Nonterminal('TOP'))
 
 with open('sentences.txt','r') as f:
     allexamples = f.read().splitlines()
