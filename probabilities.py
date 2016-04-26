@@ -43,7 +43,7 @@ def makeGrammarWithUnknown(trees,cutoff=1):
             return Tree(t.label(),[t[0]])
         return Tree(t.label(),[f_tree(st) for st in t])
         
-    filtered_trees = [f_tree(tree) for tree in parsed_trees]
+    filtered_trees = [f_tree(tree) for tree in trees]
     return makeGrammar(filtered_trees)
     
 
