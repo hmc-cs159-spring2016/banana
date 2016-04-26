@@ -3,6 +3,7 @@ Here, we get the training data & evaluate our parsers
 """
 import nltk
 from nltk.corpus import treebank
+from nltk.grammar import is_nonterminal, Production
 from sklearn import cross_validation as cv
 
 import chomsky_tree_converter as ctc
@@ -49,12 +50,22 @@ def cross_validate(fileids=None, num_folds=10, verbose=False):
 				print("actual:", tree)
 				print("gotten:", mytrees)
 			else:
-				print("could not parse", tree.leaves())
+				print("could not parse", tree)
 
 
-print(cross_validate(fileids=treebank.fileids()[:5], verbose=True))
+# print(cross_validate(fileids=treebank.fileids()[:5], verbose=True))
 
 # http://www.nltk.org/_modules/nltk/parse/evaluate.html
+tree_lists = [treebank.parsed_sents(file_id) for file_id in treebank.fileids()]
+for i in range(0, len(tree_lists)):
+	trees = tree_lists[i]
+	print(i)
+	cnf_trees = [ctc.convert_tree(t) for t in trees]
+	productions = [t.productions() for t in cnf_trees]
+	for prod in productions:
+		if len(prod) == 1 & is_nonterminal(prod[0]):
+			print("bad production:", prod)
+
 
 
 # Messing ground for things, will get rid of later
