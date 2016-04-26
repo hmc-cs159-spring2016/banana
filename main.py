@@ -62,9 +62,10 @@ for i in range(0, len(tree_lists)):
 	print(i)
 	cnf_trees = [ctc.convert_tree(t) for t in trees]
 	productions = [t.productions() for t in cnf_trees]
-	for prod in productions:
-		if len(prod) == 1 & is_nonterminal(prod[0]):
-			print("bad production:", prod)
+	for tree in productions:
+         for prod in tree:
+             if len(prod.rhs()) == 1 & is_nonterminal(prod.rhs()[0]):
+                 print("bad production:", prod)
 
 
 
