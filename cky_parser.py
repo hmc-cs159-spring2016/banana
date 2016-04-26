@@ -17,7 +17,7 @@ class ckyparser:
     def getInit(self,x):
         """
         Tries to get a rule that matches x. if no such rule exists,
-        gets UNK.
+        produces UNK.
         """     
         first_try = [p for p in self.rules if p.rhs()[0] == x]
         if len(first_try)>0:
@@ -99,28 +99,47 @@ class ckyparser:
                 #List of all relevant things to look at
                 up =  [(i-x,j) for x in range(1,depth+1)][::-1]
                 right = [(i,j+x) for x in range(1,depth+1)]
-                #Keep track of the highest probability candidates by label
-                maxProb = defaultdict(int)
+                
+                #A list of all trees we come up with. Not necessarily just
+                #the highest ones!
+                allTrees = []                
+                
+                #This dictionary keeps track of the highest probability trees
+                #by label that could go in the [i][j] location
+                maxProb = defaultdict(float)
+
+                #This dictionary will keep track of the parent for each
+                #highest probability tree we see per label.
                 bestPointer = {}
+                
+                
                 for (i1,j1),(i2,j2) in zip(up,right):
                     for p in self.rules:
                         if (p.rhs()[0] in [k.lhs() for k in chart[i1][j1]]) and (p.rhs()[1] in [k.lhs() for k in chart[i2][j2]]):                            
                             lt = max([t for t in trees[i1][j1] if t.label() == p.rhs()[0]],key=lambda t: t.prob())
                             rt = max([t for t in trees[i2][j2] if t.label() == p.rhs()[1]],key=lambda t: t.prob())
                             
+                            #Construct the tree and add it to the list
                             prob = lt.prob()*rt.prob()*p.prob()
-                            trees[i][j].append(ProbabilisticTree(p.lhs(),[lt,rt],prob=prob))
+                            allTrees.append(ProbabilisticTree(p.lhs(),[lt,rt],prob=prob))
+                            
+                            #If the probability is higher than it is for other
+                            #trees with the same node, it goes here.
                             if prob > maxProb[p.lhs()]:
-                                modp = nltk.grammar.ProbabilisticProduction(p.lhs(),p.rhs(),prob=prob)
                                 
+                                modp = nltk.grammar.ProbabilisticProduction(p.lhs(),p.rhs(),prob=prob)
                                 bestPointer[p.lhs()] = (modp,((i1,j1),(i2,j2)))
                                 maxProb[p.lhs()] = prob
                                 
+                #Filter out all extra trees that don't have the highest probability
+                trees[i][j] = [t for t in allTrees if t.prob() == maxProb[t.lhs()]]
                 chart[i][j] = {bp[0]:bp[1] for _,bp in bestPointer.items()}
 
                                                      
         #trees that are good
         mytrees = [t for t in trees[-1][0] if t.label() == self.success]
+        if len(mytrees) > 0:
+            print("more than 1 best candidate found")
         
-        return chart,mytrees
+        return chart,mytrees[0]
 
