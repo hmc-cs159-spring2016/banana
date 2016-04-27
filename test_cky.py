@@ -30,7 +30,7 @@ files = treebank.fileids()
 files = files[:100] # make shorter for setup
 gram = makeGrammarFromTreebank(files)
 myparser = cky_parser.ckyparser(gram,Nonterminal('S'))
-chart,mytrees=myparser.probabilistic_parse_from_sent("I saw John with my telescope")
+chart,mytrees,newtoks =myparser.probabilistic_parse_from_sent("I saw John with my telescope")
 
 
 

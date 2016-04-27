@@ -14,16 +14,18 @@ class ckyparser:
         self.rules = grammar.productions()
         self.success = success
         
+        
     def getInit(self,x):
         """
         Tries to get a rule that matches x. if no such rule exists,
         produces UNK.
+        
+        Returns a tuple of (all rules matching x, x or UNK)
         """     
         first_try = [p for p in self.rules if p.rhs()[0] == x]
         if len(first_try)>0:
-            return first_try
-        return [p for p in self.rules if p.rhs()[0] == "UNK"]
-        
+            return (first_try,x)
+        return ([p for p in self.rules if p.rhs()[0] == "UNK"],"UNK")
         
         
     #returns a list of parse trees
@@ -32,7 +34,9 @@ class ckyparser:
         #Get the first layer
 
         n = len(toks)
-        initlayer = [self.getInit(x) for x in toks]
+        inittoks = [self.getInit(x) for x in toks]
+        initlayer = [x[0] for x in inittoks]
+        newtoks = [x[1] for x in inittoks]
 
         
         #Fill in initial things along the diagonal
@@ -70,7 +74,7 @@ class ckyparser:
         #trees that are good
         mytrees = [t for t in trees[-1][0] if t.label() == self.success]
         
-        return chart,mytrees
+        return chart,mytrees,newtoks
 
     def probabilistic_parse_from_sent(self, sent):
         toks = nltk.word_tokenize(sent)
@@ -79,7 +83,9 @@ class ckyparser:
     #returns the best parse
     def probabilistic_parse(self,toks):
         n = len(toks)
-        initlayer = [self.getInit(x) for x in toks]
+        inittoks = [self.getInit(x) for x in toks]
+        initlayer = [x[0] for x in inittoks]
+        newtoks = [x[1] for x in inittoks]
         
         #Fill in initial things along the diagonal
         chart = [[{} for x in range(i+1)] for i in range(n)]
@@ -138,8 +144,11 @@ class ckyparser:
                                                      
         #trees that are good
         mytrees = [t for t in trees[-1][0] if t.label() == self.success]
-        if len(mytrees) > 0:
-            print("more than 1 best candidate found")
+       # if len(mytrees) > 0:
+       #     print("more than 1 best candidate found")
+        if len(mytrees) == 0:
+            print("No trees found")
+            return chart,None,newtoks
         
-        return chart,mytrees[0]
+        return chart,mytrees[0],newtoks
 
