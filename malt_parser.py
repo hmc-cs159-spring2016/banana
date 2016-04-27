@@ -1,3 +1,7 @@
+"""
+MaltParser for dependency parsing
+"""
+
 from nltk.corpus import treebank, conll2007
 from nltk.grammar import DependencyGrammar, Production
 from nltk.tree import Tree
@@ -10,25 +14,31 @@ class maltparser:
 
 	def parse(self, sent):
 		"""
-		Input: A sentence as a string
+		Input: A tokenized sentence as a list of strings
+			Uses Covington's Algorithm for dependency parsing
 		Output: An nltk.tree.Tree object of the dependency parse of the sentence
 		"""
-		toks = nltk.word_tokenize(sent)
 		headlist = []
 		wordlist = []
-		arcset   = set()
-		headFound = False
+		arcset   = []
+		if len(sent) == 0:
+			return Tree()
+		head = sent[0]
 
-		for word in toks:
+		for word in sent:
+			headFound = False
 
 			# see if word is the head of anything in headlist
 			delList = []
 			for needHead in range(len(headlist)):
 				if self.grammar.contains(word,headlist[needHead]):
-					arcset.add((word,headlist[needHead]))
+					arcset.append((word,headlist[needHead]))
 					delList.append(needHead)
+					if headlist[needHead] == head:
+						head = word
 
-				# remove words 
+			# remove words that now have a head
+			# go backwards to not invalidate indices
 			for rem in delList[::-1]:
 				headlist.pop(rem)
 
@@ -36,7 +46,7 @@ class maltparser:
 			for isHead in wordlist:
 
 				if self.grammar.contains(isHead,word):
-					arcset.add((isHead,word))
+					arcset.append((isHead,word))
 					headFound = True
 					break # Can't have more than one head
 
@@ -49,7 +59,7 @@ class maltparser:
 		if len(headlist) > 1:
 			print("WARNING: SOME WORDS DID NOT FIND A HEAD")
 
-		return self.relations(arcset, toks, headlist[0])
+		return self.relations(arcset, sent, head)
 
 	def relations(self, arcset, toks, head):
 		"""
@@ -80,14 +90,23 @@ class maltparser:
 # b = a.parse('bye hello world hi')
 # print(b)
 
-g = DependencyGrammar.fromstring("""
-... 'taught' -> 'play' 'man'
-... 'man' -> 'the'
-... 'play' -> 'golf' 'dog' 'to'
-... 'dog' -> 'his'
-... """)
+# g = DependencyGrammar.fromstring("""
+# ... 'taught' -> 'play' 'man'
+# ... 'man' -> 'the'
+# ... 'play' -> 'golf' 'dog' 'to'
+# ... 'dog' -> 'his'
+# ... """)
 
-grammar = DependencyGrammar([Production('taught',['play', 'man']),Production('man',['the']),Production('play',['golf','dog','to']),Production('dog',['his'])])
+def dependencyGraphToGrammar(depGraph):
+	storage = {}
+	for subtree in depGraph.tree().subtree():
+		storage[subtree.label()] = [(a.label() if type(a)==type(nltk.tree.Tree()) else a) for a in list(subtree)]
 
-a = maltparser(grammar)
-print(a.parse('the man taught his dog to play golf'))
+grammar0 = DependencyGrammar([Production('taught',['play', 'man']),Production('man',['the']),Production('play',['golf','dog','to']),Production('dog',['his'])])
+
+a = maltparser(grammar0)
+print(a.parse(['the','man','taught','his','dog','to','play','golf']))
+
+grammar1 = DependencyGrammar([Production('fell',['price','stock']),Production('price',['of','the']),Production('of',['stock']),Production('stock',['the'])])
+b = maltparser(grammar1)
+print(b.parse(nltk.word_tokenize('the price of the stock fell')))
