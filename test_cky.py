@@ -7,32 +7,40 @@ Created on Wed Apr 20 13:49:04 2016
 
 from nltk.corpus import treebank
 from nltk import Nonterminal, nonterminals, Production, CFG, Tree, ProbabilisticTree,PCFG
-from nltk import treetransforms
+import chomsky_converter as cc
+import chomsky_tree_converter as ctc
 from functools import reduce
 from collections import defaultdict
 import nltk
 import cky_parser
 from probabilities import *
 
-toy_pcfg1 = PCFG.fromstring("""
-    S -> NP VP [1.0]
-    NP -> Det N [0.5] | NP PP [0.25] | 'John' [0.1] | 'I' [0.15]
-    Det -> 'the' [0.8] | 'my' [0.2]
-    N -> 'man' [0.5] | 'telescope' [0.5]
-    V -> 'ate' [0.35] | 'saw' [0.65]
-    VP -> VP PP [0.1] | V NP [0.7] | 'ate' [0.07] | 'saw' [0.13]
-    PP -> P NP [1.0]
-    P -> 'with' [0.61] | 'under' [0.39]
-    """)
-    
-#toy_pcfg1 = treetransforms.chomsky_normal_form(toy_pcfg1)
-files = treebank.fileids()
-files = files[:100] # make shorter for setup
-gram = makeGrammarFromTreebank(files)
-myparser = cky_parser.ckyparser(gram,Nonterminal('S'))
-chart,mytrees,newtoks =myparser.probabilistic_parse_from_sent("I saw John with my telescope")
+def trial_run_with_treebank():
+    files = treebank.fileids()
+    files = files[:100] # make shorter for setup
+    gram = makeGrammarFromTreebank(files)
+    myparser = cky_parser.ckyparser(gram,Nonterminal('S'))
+    chart,mytrees = myparser.probabilistic_parse_from_sent("I saw John with my telescope")
+    print(mytrees)
 
+def trial_run_with_toy_grammar():
+    toy_pcfg1 = PCFG.fromstring("""
+        S -> NP VP [1.0]
+        NP -> Det N [0.5] | NP PP [0.25] | 'John' [0.1] | 'I' [0.15]
+        Det -> 'the' [0.8] | 'my' [0.2]
+        N -> 'man' [0.5] | 'telescope' [0.5]
+        V -> 'ate' [0.35] | 'saw' [0.65]
+        VP -> VP PP [0.1] | V NP [0.7] | 'ate' [0.07] | 'saw' [0.13]
+        PP -> P NP [1.0]
+        P -> 'with' [0.61] | 'under' [0.39]
+        """)
+    toy_pcfg1 = cc.convert_grammar(toy_pcfg1)
 
+    myparser = cky_parser.ckyparser(toy_pcfg1, Nonterminal('S'))
+    chart,mytrees = myparser.probabilistic_parse_from_sent("I saw John with my telescope")
+    print(mytrees)
+
+trial_run_with_toy_grammar()
 
 #
 #
