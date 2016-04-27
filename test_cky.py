@@ -12,6 +12,7 @@ from functools import reduce
 from collections import defaultdict
 import nltk
 import cky_parser
+from probabilities import *
 
 toy_pcfg1 = PCFG.fromstring("""
     S -> NP VP [1.0]
@@ -25,41 +26,44 @@ toy_pcfg1 = PCFG.fromstring("""
     """)
     
 #toy_pcfg1 = treetransforms.chomsky_normal_form(toy_pcfg1)
-myparser = cky_parser.ckyparser(toy_pcfg1.productions(),Nonterminal('S'))
-chart,mytrees=myparser.probabilistic_parse("I saw John with my telescope")
+files = treebank.fileids()
+files = files[:100] # make shorter for setup
+gram = makeGrammarFromTreebank(files)
+myparser = cky_parser.ckyparser(gram,Nonterminal('S'))
+chart,mytrees,newtoks =myparser.probabilistic_parse_from_sent("I saw John with my telescope")
 
 
 
-
-
-
-
-## Deterministic parse
-
-import chomsky_converter 
-cfg_grammar = nltk.data.load("project1_grammar.cfg")
-cnf_grammar = chomsky_converter.convert_grammar(cfg_grammar)
-
-
-#Check it
-nts = nonterminals('S, NP, VP, PP, N, V, P, DT')
-
-#s = '(S (NP (DT the) (NN cat)) (VP (VBD ate) (NP (DT a) (NN cookie))))'
-#t = Tree.fromstring(s)
-#t.chomsky_normal_form()
-
-myparser = cky_parser.ckyparser(cnf_grammar.productions(),Nonterminal('TOP'))
-
-with open('sentences.txt','r') as f:
-    allexamples = f.read().splitlines()
-for ex in allexamples:
-    chart,mytrees=myparser.deterministic_parse(ex)
-    if len(mytrees)>0:
-        print("success")
-    else:
-        print("fail")
-        print(ex)
-        print(nltk.word_tokenize(ex))
-        print(mytrees)
-        
-        
+#
+#
+#
+#
+### Deterministic parse
+#
+#import chomsky_converter 
+#cfg_grammar = nltk.data.load("project1_grammar.cfg")
+#cnf_grammar = chomsky_converter.convert_grammar(cfg_grammar)
+#
+#
+##Check it
+#nts = nonterminals('S, NP, VP, PP, N, V, P, DT')
+#
+##s = '(S (NP (DT the) (NN cat)) (VP (VBD ate) (NP (DT a) (NN cookie))))'
+##t = Tree.fromstring(s)
+##t.chomsky_normal_form()
+#
+#myparser = cky_parser.ckyparser(cnf_grammar,Nonterminal('TOP'))
+#
+#with open('sentences.txt','r') as f:
+#    allexamples = f.read().splitlines()
+#for ex in allexamples:
+#    chart,mytrees=myparser.deterministic_parse(ex)
+#    if len(mytrees)>0:
+#        print("success")
+#    else:
+#        print("fail")
+#        print(ex)
+#        print(nltk.word_tokenize(ex))
+#        print(mytrees)
+#        
+#        
