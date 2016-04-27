@@ -32,23 +32,25 @@ def brackets(t):
     _brackets_helper(t, 0, result)
     return result
 
-def evalb(test_tree,gold_tree):
+def evalb(test_trees,gold_trees):
     """
-    Call this on two trees
+    Call this on two list of trees
     """
+    matchcount = testcount = goldcount = 0
     
-    goldbrackets = brackets(gold_tree)
-    goldcount = len(goldbrackets)
+    for test_tree,gold_tree in zip(test_trees,gold_trees):
+        goldbrackets = brackets(gold_tree)
+        goldcount += len(goldbrackets)
     
-    testbrackets = brackets(test_tree)
-    testcount = len(testbrackets)
+        testbrackets = brackets(test_tree)
+        testcount += len(testbrackets)
     
-    matchcount = 0
-    for bracket,count in testbrackets.items():
-        matchcount += min(count,goldbrackets[bracket])
+        for bracket,count in testbrackets.items():
+            matchcount += min(count,goldbrackets[bracket])
 
     print("{}\t{} brackets".format(' '.join(test_tree.leaves()), testcount))
     print("{}\t{} brackets".format(' '.join(gold_tree.leaves()), goldcount))
     print("matching\t{} brackets".format(matchcount))
-    return
+    return(matchcount/goldcount)
+    
     
