@@ -74,7 +74,7 @@ class ckyparser:
         #trees that are good
         mytrees = [t for t in trees[-1][0] if t.label() == self.success]
         
-        return chart,mytrees,newtoks
+        return chart,mytrees
 
     def probabilistic_parse_from_sent(self, sent):
         toks = nltk.word_tokenize(sent)
@@ -148,7 +148,6 @@ class ckyparser:
        #     print("more than 1 best candidate found")
         if len(mytrees) == 0:
             print("No trees found")
-            return chart,None,newtoks
+            return chart,None
         
-        return chart,mytrees[0],newtoks
-
+        return chart,mytrees[0]
