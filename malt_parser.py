@@ -101,12 +101,3 @@ def dependencyGraphToGrammar(depGraph):
 	storage = {}
 	for subtree in depGraph.tree().subtree():
 		storage[subtree.label()] = [(a.label() if type(a)==type(nltk.tree.Tree()) else a) for a in list(subtree)]
-
-grammar0 = DependencyGrammar([Production('taught',['play', 'man']),Production('man',['the']),Production('play',['golf','dog','to']),Production('dog',['his'])])
-
-a = maltparser(grammar0)
-print(a.parse(['the','man','taught','his','dog','to','play','golf']))
-
-grammar1 = DependencyGrammar([Production('fell',['price','stock']),Production('price',['of','the']),Production('of',['stock']),Production('stock',['the'])])
-b = maltparser(grammar1)
-print(b.parse(nltk.word_tokenize('the price of the stock fell')))

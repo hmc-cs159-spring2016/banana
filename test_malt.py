@@ -32,24 +32,38 @@ def compareDependencyTrees(testTree, refTree):
 	Input: 2 Trees, the first is the test, the second is the reference
 	Output: True if the trees are the same, not dependent on order of subtrees
 	"""
+	# If the standard comparison says it's true, it's true
 	if testTree == refTree:
 		return True
 	testSubs = list(testTree)
 	refSubs = list(refTree)
 
-	if type(testTree) == str:
+	# If one of the trees is a string, since they aren't the same by direct comparison,
+	# they must not be the same.
+	if type(testTree) == str or type(refTree) == str:
 		return False
+
+	# If the labels are not the same or the numbers of subtrees
 	if testTree.label() != refTree.label() or len(testSubs) != len(refSubs):
 		return False
 
+	# If a subtree is not in the other tree, then it should be marked as -1. If it is, mark it with
+	# the index
+	# Go through every subtree
 	foundList = [-1]*len(testSubs)
 	for test in range(len(testSubs)):
 		for ref in range(len(refSubs)):
+
+			# If one is a string and the other is a Tree
 			if (type(testSubs[test]) != type(refSubs[ref])):
 				continue
+
+			# If both are strings, do a direct comparison
 			elif (type(testSubs[test]) == str):
 				if testSubs[test] == refSubs[ref]:
 					foundList[test] = ref
+
+			# Otherwise recurse
 			elif compareDependencyTrees(refSubs[ref], testSubs[test]):
 				foundList[test] = ref
 
@@ -61,8 +75,8 @@ def crossValidation(numIter, testProp):
 	Input: The number of iterations to run and the proportion of 
 	Output: The average proportion of correctly parsed sentences
 	"""
-	numTest = int(testProp * len(dependency_treebank.parsed_sents()))
-	numList = list(range(len(dependency_treebank.parsed_sents())))
+	numTest = int(testProp * 1000)
+	numList = list(range(1000))
 	counter = [0]*numIter
 
 	# repeat numIter times
@@ -79,36 +93,31 @@ def crossValidation(numIter, testProp):
 
 		# try every test sentence. See how the parser does
 		for test in tests:
-			print(test)
 			testSent = parser.parse(dependency_treebank.sents()[test])
 			refSent = dependency_treebank.parsed_sents()[test].tree()
 			if compareDependencyTrees(testSent,refSent):
 				counter[i] += 1
 
 	# return the average score of all of the iterations.
-	return sum(counter)/numTest
+	return sum(counter)/(numTest*numIter)
+
+# Small test from http://www.nltk.org/howto/dependency.html
+
+# grammar0 = DependencyGrammar([Production('taught',['play', 'man']),Production('man',['the']),Production('play',['golf','dog','to']),Production('dog',['his'])])
+
+# a = maltparser(grammar0)
+# print(a.parse(['the','man','taught','his','dog','to','play','golf']))
+
+# grammar1 = DependencyGrammar([Production('fell',['price','stock']),Production('price',['of','the']),Production('of',['stock']),Production('stock',['the'])])
+# b = maltparser(grammar1)
+# print(b.parse(nltk.word_tokenize('the price of the stock fell')))
 
 
-
-	# # Go through every subtree one level down in testTree
-	# for tree0 in testTree.subtrees(lambda t: t.height() == 2):
-	# 	sameTree = False
-
-	# 	# Go through every subtree one level down in refTree
-	# 	for tree1 in refTree.subtrees(lambda t: t.height() == 2):
-	# 		if compareDependencyTrees(tree0,tree1):
-	# 			sameTree = True
-	# 			break
-	# 	if not sameTree:
-	# 		return False
-	# return True
-
-
-grammar = dependencyGraphsToGrammar(dependency_treebank.parsed_sents()[:100])
-parser = malt_parser.maltparser(grammar)
-a = parser.parse(dependency_treebank.sents()[101])
+# grammar = dependencyGraphsToGrammar(dependency_treebank.parsed_sents()[:100])
+# parser = malt_parser.maltparser(grammar)
+# a = parser.parse(dependency_treebank.sents()[101])
 # print(a == dependency_treebank.parsed_sents()[101].tree())
 # # print(compareDependencyTrees(a,dependency_treebank.parsed_sents()[0].tree()))
 # print(a)
 # print(dependency_treebank.parsed_sents()[101].tree())
-crossValidation(2,.001)
+print(crossValidation(1,.001))
