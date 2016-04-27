@@ -48,9 +48,9 @@ def evalb(test_trees,gold_trees):
         for bracket,count in testbrackets.items():
             matchcount += min(count,goldbrackets[bracket])
 
-    print("{}\t{} brackets".format(' '.join(test_tree.leaves()), testcount))
-    print("{}\t{} brackets".format(' '.join(gold_tree.leaves()), goldcount))
-    print("matching\t{} brackets".format(matchcount))
+    #print("{}\t{} brackets".format(' '.join(test_tree.leaves()), testcount))
+    #print("{}\t{} brackets".format(' '.join(gold_tree.leaves()), goldcount))
+    #print("matching\t{} brackets".format(matchcount))
     return(matchcount/goldcount)
     
     
