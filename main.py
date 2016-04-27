@@ -3,6 +3,7 @@ Here, we get the training data & evaluate our parsers
 """
 import nltk
 from nltk.corpus import treebank
+from nltk import Nonterminal
 from nltk.grammar import is_nonterminal, Production
 from sklearn import cross_validation as cv
 
@@ -51,7 +52,7 @@ def cross_validate(fileids=None, num_folds=10, verbose=False):
 		# Split the data for this fold, & train, test on 1%, because parsing is so slow
 		train, test = cv.train_test_split(trees, test_size=0.01)
 		grammar = probabilities.makeGrammarWithUnknown(train)
-		myparser = ckyparser(grammar, ctc.start_symbol)
+		myparser = ckyparser(grammar, Nonterminal(ctc.start_symbol))
 
 		# Test all the test sentences
 		for tree in test:
