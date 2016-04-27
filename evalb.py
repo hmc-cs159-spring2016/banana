@@ -34,7 +34,7 @@ def brackets(t):
 
 def evalb(test_trees,gold_trees):
     """
-    Call this on two list of trees
+    Call this on two list of trees, returns the accuracy of the test trees
     """
     matchcount = testcount = goldcount = 0
     
@@ -48,9 +48,6 @@ def evalb(test_trees,gold_trees):
         for bracket,count in testbrackets.items():
             matchcount += min(count,goldbrackets[bracket])
 
-    #print("{}\t{} brackets".format(' '.join(test_tree.leaves()), testcount))
-    #print("{}\t{} brackets".format(' '.join(gold_tree.leaves()), goldcount))
-    #print("matching\t{} brackets".format(matchcount))
     return(matchcount/goldcount)
     
     

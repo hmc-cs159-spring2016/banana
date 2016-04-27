@@ -37,51 +37,24 @@ def cross_validate(fileids=None, num_folds=10, verbose=False):
 	"""
 	trees = get_trees(fileids, verbose)
 
+	original_trees = []
+	resulting_trees = []
 	for i in range(0, num_folds):
+		if verbose:
+			print("Starting cross validation round,",i)
 		train, test = cv.train_test_split(trees, test_size=0.1)
 		grammar = probabilities.makeGrammar(train)
 		myparser = ckyparser(grammar, ctc.start_symbol)
 		for tree in test:
 			sentence = tree.leaves()
-			chart,mytrees = myparser.probabilistic_parse(sentence)
+			chart,mytree = myparser.probabilistic_parse(sentence)
 
 			# We don't have actual evaluation yet, here they are next to each other.
-			if mytrees:
+			if mytree:
 				print("actual:", tree)
-				print("gotten:", mytrees)
+				print("gotten:", mytree)
 			else:
-				print("could not parse", tree)
+				print("could not parse", tree.leaves())
 
 
-# print(cross_validate(fileids=treebank.fileids()[:5], verbose=True))
-
-# http://www.nltk.org/_modules/nltk/parse/evaluate.html
-tree_lists = [treebank.parsed_sents(file_id) for file_id in treebank.fileids()]
-for i in range(0, len(tree_lists)):
-	trees = tree_lists[i]
-	print(i)
-	cnf_trees = [ctc.convert_tree(t) for t in trees]
-	productions = [t.productions() for t in cnf_trees]
-	for tree in productions:
-         for prod in tree:
-             if len(prod.rhs()) == 1 & is_nonterminal(prod.rhs()[0]):
-                 print("bad production:", prod)
-
-
-
-# Messing ground for things, will get rid of later
-# ##########
-# groucho_grammar = nltk.CFG.fromstring(""" 
-# S -> NP VP 
-# PP -> P NP 
-# NP -> Det N | Det N PP | 'I' 
-# VP -> V NP | VP PP 
-# Det -> 'an' | 'my' 
-# N -> 'elephant' | 'pajamas' 
-# V -> 'shot' 
-# P -> 'in' 
-# """)
-# sent = ['I', 'shot', 'an', 'elephant', 'in', 'my', 'pajamas']
-# parser = nltk.ChartParser(groucho_grammar)
-# for tree in parser.parse(sent):
-#     print(tree.flatten())
+print(cross_validate(fileids=treebank.fileids()[:50], verbose=True))
