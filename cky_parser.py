@@ -147,7 +147,7 @@ class ckyparser:
        # if len(mytrees) > 0:
        #     print("more than 1 best candidate found")
         if len(mytrees) == 0:
-            print("No trees found")
+            # print("No trees found")
             return chart,None
         
         return chart,mytrees[0]
