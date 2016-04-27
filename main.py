@@ -50,7 +50,7 @@ def cross_validate(fileids=None, num_folds=10, verbose=False):
 
 		# Split the data for this fold, & train, test on 1%, because parsing is so slow
 		train, test = cv.train_test_split(trees, test_size=0.01)
-		grammar = probabilities.makeGrammar(train)
+		grammar = probabilities.makeGrammarWithUnknown(train)
 		myparser = ckyparser(grammar, ctc.start_symbol)
 
 		# Test all the test sentences
