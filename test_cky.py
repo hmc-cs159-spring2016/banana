@@ -40,7 +40,7 @@ def trial_run_with_toy_grammar():
     chart,mytrees = myparser.probabilistic_parse_from_sent("I saw John with my telescope")
     print(mytrees)
 
-trial_run_with_toy_grammar()
+trial_run_with_treebank()
 
 #
 #

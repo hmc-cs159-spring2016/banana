@@ -3,8 +3,7 @@ Here, we get the training data & evaluate our parsers
 """
 import nltk
 from nltk.corpus import treebank
-from nltk import Nonterminal
-from nltk.grammar import is_nonterminal, Production
+from nltk.grammar import is_nonterminal, Production, Nonterminal
 from sklearn import cross_validation as cv
 
 import chomsky_tree_converter as ctc
@@ -60,9 +59,11 @@ def cross_validate(fileids=None, num_folds=10, verbose=False):
 			chart, mytree = myparser.probabilistic_parse(sentence)
 
 			if mytree:
+				print("parsed!", mytree)
 				original_trees += [tree]
 				resulting_trees += [mytree]
 			else:
+				print("didn't parse")
 				unsuccessful_parses += 1
 
 		if original_trees:
@@ -86,4 +87,4 @@ def cross_validate(fileids=None, num_folds=10, verbose=False):
 		print("We could not parse", unparsed_num, "sentences")
 	return avg_accuracy
 
-print(cross_validate(fileids=treebank.fileids()[:50], verbose=True))
+print(cross_validate(fileids=treebank.fileids()[:25], verbose=True))
