@@ -132,7 +132,7 @@ class ckyparser:
                                 maxProb[p.lhs()] = prob
                                 
                 #Filter out all extra trees that don't have the highest probability
-                trees[i][j] = [t for t in allTrees if t.prob() == maxProb[t.lhs()]]
+                trees[i][j] = [t for t in allTrees if t.prob() == maxProb[t.label()]]
                 chart[i][j] = {bp[0]:bp[1] for _,bp in bestPointer.items()}
 
                                                      
