@@ -80,9 +80,9 @@ def eliminate_units(tree_parse):
         else:
             # Bypass the single child, point straight to the grandchildren
             # Don't forget to check grandchildren recursively.
-            child = tree_parse[0]
+            child = eliminate_units(tree_parse[0])
 
-            grandchildren = [eliminate_units(t) for t in child]
+            grandchildren = [t for t in child]
             return Tree(tree_parse.label(), grandchildren)
 
 
